@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #21295C;
+  --color-deep-blue: #065A82;
+  --color-teal: #1C7293;
+  --color-ice-blue: #EAF2F6;
+}
+
+/*
+  LedgerLearn global base styles.
+  Ice-blue background, serif headings, system sans-serif body.
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-ice-blue);
+  color: var(--color-navy);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Georgia, Cambria, "Times New Roman", serif;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-navy);
+}
+
+a {
+  color: var(--color-teal);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--color-deep-blue);
+}
