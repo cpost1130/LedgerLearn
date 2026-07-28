@@ -1,7 +1,22 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+"use client";
+
+import { useUser, SignInButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 export function Header() {
+  const { isLoaded, isSignedIn } = useUser();
+
+  // Don't render anything until Clerk has loaded to prevent flash
+  if (!isLoaded) {
+    return (
+      <header className="flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b border-ice-blue">
+        <span className="font-serif text-2xl font-bold text-navy">
+          LedgerLearn
+        </span>
+      </header>
+    );
+  }
+
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b border-ice-blue">
       <Link
@@ -12,14 +27,13 @@ export function Header() {
       </Link>
 
       <div className="flex items-center gap-4">
-        <SignedOut>
+        {!isSignedIn ? (
           <SignInButton mode="redirect">
             <button className="rounded-lg bg-teal px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-deep-blue cursor-pointer">
               Sign In
             </button>
           </SignInButton>
-        </SignedOut>
-        <SignedIn>
+        ) : (
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
@@ -35,7 +49,7 @@ export function Header() {
               }}
             />
           </div>
-        </SignedIn>
+        )}
       </div>
     </header>
   );
