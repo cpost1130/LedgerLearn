@@ -1,4 +1,4 @@
-import { Show, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 export function Header() {
@@ -12,14 +12,14 @@ export function Header() {
       </Link>
 
       <div className="flex items-center gap-4">
-        <Show when="signed-out">
+        <SignedOut>
           <SignInButton mode="redirect">
             <button className="rounded-lg bg-teal px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-deep-blue cursor-pointer">
               Sign In
             </button>
           </SignInButton>
-        </Show>
-        <Show when="signed-in">
+        </SignedOut>
+        <SignedIn>
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
@@ -35,7 +35,7 @@ export function Header() {
               }}
             />
           </div>
-        </Show>
+        </SignedIn>
       </div>
     </header>
   );
