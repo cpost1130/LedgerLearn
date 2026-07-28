@@ -10,6 +10,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { RichTextContent } from "@/components/RichTextContent";
 import { SlidesViewer } from "@/components/SlidesViewer";
 import { QuizViewer } from "@/components/QuizViewer";
+import { TAccountExercise } from "@/components/TAccountExercise";
 import { MarkCompleteButton } from "./MarkCompleteButton";
 
 interface PageProps {
@@ -127,33 +128,7 @@ export default async function LessonViewerPage({ params }: PageProps) {
         return <SlidesViewer slides={slides} />;
       }
       case "exercise":
-        return (
-          <div className="rounded-xl border border-ice-blue bg-white p-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-teal/10">
-              <span className="text-3xl">✏️</span>
-            </div>
-            <h2 className="font-serif text-xl text-navy">
-              Interactive Exercise
-            </h2>
-            <p className="mt-2 text-navy/60">
-              The T-Account practice exercise is coming soon. You&apos;ll be
-              able to drag and drop debits and credits into the correct
-              accounts.
-            </p>
-            <div className="mt-6 rounded-lg border border-dashed border-ice-blue bg-ice-blue/30 p-6">
-              <div className="flex justify-center gap-8 text-sm text-navy/40">
-                <div className="text-center">
-                  <div className="font-bold">DEBIT</div>
-                  <div className="mt-1 h-20 w-32 rounded border border-navy/10"></div>
-                </div>
-                <div className="text-center">
-                  <div className="font-bold">CREDIT</div>
-                  <div className="mt-1 h-20 w-32 rounded border border-navy/10"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
+        return <TAccountExercise />;
       case "quiz": {
         const questions = (content?.questions as Array<{
           question: string;
