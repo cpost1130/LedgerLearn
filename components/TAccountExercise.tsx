@@ -1,112 +1,82 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
-interface Transaction {
-  id: number;
-  description: string;
-  firstAccount: string;
-  firstAmount: number;
-  /** Whether the first account is a debit or credit — the correct answer the student must pick */
-  firstType: "debit" | "credit";
-  secondAccount: string;
-  secondAmount: number;
+interface Question {
+  text: string;
+  /** Correct side for the Cash account on this transaction */
+  answer: "debit" | "credit";
+  /** Dollar amount of the Cash movement */
+  amount: number;
   explanation: string;
 }
 
-interface AnsweredTransaction {
-  transaction: Transaction;
-  studentAnswer: "debit" | "credit";
-  isCorrect: boolean;
-}
-
-/** A single ledger entry (account + amount) shown on one side of the T-account */
-interface LedgerEntry {
-  account: string;
+interface LedgerRow {
+  side: "debit" | "credit";
   amount: number;
 }
 
-// ── Sample Transactions ─────────────────────────────────────────────────────
+// ── Maria's Bakery Questions (from t_account_practice.html) ─────────────────
 
-const TRANSACTIONS: Transaction[] = [
+const QUESTIONS: Question[] = [
   {
-    id: 1,
-    description: "Maria's Bakery invests $10,000 cash to start the business.",
-    firstAccount: "Cash",
-    firstAmount: 10000,
-    firstType: "debit",
-    secondAccount: "Owner's Equity",
-    secondAmount: 10000,
+    text: "Maria sells $40 of pastries for cash.",
+    answer: "debit",
+    amount: 40,
     explanation:
-      "Cash (an asset) is increasing, so we debit Cash. Owner's Equity is increasing, so we credit Owner's Equity.",
+      "Cash (an asset) increases, so it's recorded as a Debit.",
   },
   {
-    id: 2,
-    description: "Purchased baking equipment for $3,000 cash.",
-    firstAccount: "Equipment",
-    firstAmount: 3000,
-    firstType: "debit",
-    secondAccount: "Cash",
-    secondAmount: 3000,
+    text: "Maria pays $75 cash for flour.",
+    answer: "credit",
+    amount: 75,
     explanation:
-      "Equipment (an asset) is increasing, so we debit Equipment. Cash is decreasing, so we credit Cash.",
+      "Cash (an asset) decreases, so it's recorded as a Credit.",
   },
   {
-    id: 3,
-    description: "Bought $500 of flour and sugar on credit from Supplier Co.",
-    firstAccount: "Supplies",
-    firstAmount: 500,
-    firstType: "debit",
-    secondAccount: "Accounts Payable",
-    secondAmount: 500,
+    text: "A customer pays Maria $120 cash for a catering order.",
+    answer: "debit",
+    amount: 120,
     explanation:
-      "Supplies (an asset) is increasing, so we debit Supplies. Accounts Payable (a liability) is increasing, so we credit Accounts Payable.",
+      "Cash increases when a customer pays, so it's a Debit.",
   },
   {
-    id: 4,
-    description: "Sold $800 of baked goods for cash.",
-    firstAccount: "Cash",
-    firstAmount: 800,
-    firstType: "debit",
-    secondAccount: "Revenue",
-    secondAmount: 800,
+    text: "Maria pays her assistant $60 in cash wages.",
+    answer: "credit",
+    amount: 60,
     explanation:
-      "Cash (an asset) is increasing, so we debit Cash. Revenue is increasing, and revenue accounts are increased with credits.",
+      "Cash decreases when wages are paid out, so it's a Credit.",
   },
   {
-    id: 5,
-    description: "Paid $200 to Supplier Co (partial payment).",
-    firstAccount: "Accounts Payable",
-    firstAmount: 200,
-    firstType: "debit",
-    secondAccount: "Cash",
-    secondAmount: 200,
+    text:
+      "Maria deposits an extra $200 of her own money into the business bank account.",
+    answer: "debit",
+    amount: 200,
     explanation:
-      "Accounts Payable (a liability) is decreasing, so we debit Accounts Payable. Cash is decreasing, so we credit Cash.",
+      "Cash increases with the owner's deposit, so it's a Debit (Equity increases too, as a Credit — but we're tracking Cash here).",
   },
   {
-    id: 6,
-    description: "Paid $100 for monthly utilities.",
-    firstAccount: "Utilities Expense",
-    firstAmount: 100,
-    firstType: "debit",
-    secondAccount: "Cash",
-    secondAmount: 100,
+    text: "Maria pays $90 cash for the electricity bill.",
+    answer: "credit",
+    amount: 90,
     explanation:
-      "Utilities Expense is increasing, and expenses are increased with debits. Cash is decreasing, so we credit Cash.",
+      "Cash decreases when a bill is paid, so it's a Credit.",
   },
   {
-    id: 7,
-    description: "Maria withdrew $500 for personal use.",
-    firstAccount: "Owner's Draw",
-    firstAmount: 500,
-    firstType: "debit",
-    secondAccount: "Cash",
-    secondAmount: 500,
+    text: "Maria sells $65 of bread for cash.",
+    answer: "debit",
+    amount: 65,
     explanation:
-      "Owner's Draw (a contra-equity account) is increasing, so we debit Owner's Draw. Cash is decreasing, so we credit Cash.",
+      "Cash increases with the sale, so it's a Debit.",
+  },
+  {
+    text: "Maria pays $50 cash to repair the oven.",
+    answer: "credit",
+    amount: 50,
+    explanation:
+      "Cash decreases with the repair payment, so it's a Credit.",
   },
 ];
 
@@ -120,388 +90,302 @@ function formatCurrency(amount: number): string {
 
 export function TAccountExercise() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<AnsweredTransaction[]>([]);
-  const [feedback, setFeedback] = useState<{
-    isCorrect: boolean;
-    message: string;
-  } | null>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<"debit" | "credit" | null>(null);
+  const [score, setScore] = useState(0);
+  const [chosen, setChosen] = useState<"debit" | "credit" | null>(null);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [ledger, setLedger] = useState<LedgerRow[]>([]);
   const [isComplete, setIsComplete] = useState(false);
 
-  const totalTransactions = TRANSACTIONS.length;
-  const currentTransaction = TRANSACTIONS[currentIndex];
+  const total = QUESTIONS.length;
+  const question = QUESTIONS[currentIndex];
 
-  // ── Compute the running T-account ledger from all answered transactions ──
-
-  const ledger = answers.reduce(
-    (acc, a) => {
-      const t = a.transaction;
-      if (t.firstType === "debit") {
-        acc.debits.push({ account: t.firstAccount, amount: t.firstAmount });
-        acc.credits.push({ account: t.secondAccount, amount: t.secondAmount });
-      } else {
-        acc.debits.push({ account: t.secondAccount, amount: t.secondAmount });
-        acc.credits.push({ account: t.firstAccount, amount: t.firstAmount });
-      }
-      return acc;
-    },
-    { debits: [] as LedgerEntry[], credits: [] as LedgerEntry[] }
-  );
-
-  const debitTotal = ledger.debits.reduce((sum, e) => sum + e.amount, 0);
-  const creditTotal = ledger.credits.reduce((sum, e) => sum + e.amount, 0);
+  const debitTotal = ledger
+    .filter((r) => r.side === "debit")
+    .reduce((sum, r) => sum + r.amount, 0);
+  const creditTotal = ledger
+    .filter((r) => r.side === "credit")
+    .reduce((sum, r) => sum + r.amount, 0);
+  const balance = debitTotal - creditTotal;
 
   // ── Handlers ────────────────────────────────────────────────────────────
 
   const handleAnswer = useCallback(
     (answer: "debit" | "credit") => {
-      if (selectedAnswer !== null || !currentTransaction) return;
-
-      const isCorrect = answer === currentTransaction.firstType;
-      setSelectedAnswer(answer);
-      setFeedback({
-        isCorrect,
-        message: isCorrect
-          ? currentTransaction.explanation
-          : `Not quite. ${currentTransaction.explanation}`,
-      });
-
-      setAnswers((prev) => [
+      if (chosen !== null || isComplete) return;
+      const correct = answer === question.answer;
+      setChosen(answer);
+      setIsCorrect(correct);
+      if (correct) setScore((s) => s + 1);
+      setLedger((prev) => [
         ...prev,
-        {
-          transaction: currentTransaction,
-          studentAnswer: answer,
-          isCorrect,
-        },
+        { side: question.answer, amount: question.amount },
       ]);
     },
-    [selectedAnswer, currentTransaction]
+    [chosen, isComplete, question]
   );
 
   const handleNext = useCallback(() => {
-    if (currentIndex + 1 >= totalTransactions) {
+    if (currentIndex + 1 >= total) {
       setIsComplete(true);
     } else {
-      setCurrentIndex((prev) => prev + 1);
-      setSelectedAnswer(null);
-      setFeedback(null);
+      setCurrentIndex((i) => i + 1);
+      setChosen(null);
+      setIsCorrect(null);
     }
-  }, [currentIndex, totalTransactions]);
+  }, [currentIndex, total]);
 
   const handleRestart = useCallback(() => {
     setCurrentIndex(0);
-    setAnswers([]);
-    setFeedback(null);
-    setSelectedAnswer(null);
+    setScore(0);
+    setChosen(null);
+    setIsCorrect(null);
+    setLedger([]);
     setIsComplete(false);
   }, []);
-
-  const score = answers.filter((a) => a.isCorrect).length;
 
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-8">
-      {/* ── Progress indicator ── */}
-      {!isComplete && (
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <div className="h-2 w-full rounded-full bg-ice-blue">
-              <div
-                className="h-2 rounded-full bg-teal transition-all duration-500"
-                style={{
-                  width: `${((currentIndex + (selectedAnswer ? 1 : 0)) / totalTransactions) * 100}%`,
-                }}
-              />
-            </div>
-          </div>
-          <span className="text-sm font-medium text-navy/60">
-            {currentIndex + 1} of {totalTransactions}
-          </span>
+    <div className="space-y-6">
+      {/* Header card */}
+      <div className="rounded-xl bg-navy p-6 text-white">
+        <h2 className="font-serif text-xl text-white">T-Account Practice</h2>
+        <p className="mt-1 text-sm text-teal">
+          Maria&apos;s Bakery — pick Debit or Credit for each transaction
+        </p>
+        <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-white/15">
+          <div
+            className="h-full rounded-full bg-teal transition-all duration-300"
+            style={{
+              width: `${
+                isComplete
+                  ? 100
+                  : ((currentIndex + (chosen !== null ? 1 : 0)) / total) * 100
+              }%`,
+            }}
+          />
         </div>
-      )}
+      </div>
 
-      {/* ── Transaction Card ── */}
-      {!isComplete && currentTransaction && (
+      {/* Question card */}
+      {!isComplete && (
         <div className="rounded-xl border border-ice-blue bg-white p-6 shadow-sm">
-          <p className="text-lg font-medium text-navy">
-            {currentTransaction.description}
+          <div className="text-xs font-semibold uppercase tracking-wide text-teal">
+            Question {currentIndex + 1} of {total}
+          </div>
+          <p className="mt-3 text-lg font-medium leading-relaxed text-navy">
+            {question.text}
           </p>
-          <p className="mt-3 text-navy/70">
-            <span className="font-semibold text-navy">
-              {currentTransaction.firstAccount}
-            </span>
-            : {formatCurrency(currentTransaction.firstAmount)}
-          </p>
-          <p className="mt-1 text-sm text-navy/50">
-            Is this first account a <strong>Debit</strong> or{" "}
-            <strong>Credit</strong>?
+          <p className="mt-2 text-sm text-navy/50">
+            For the <strong>Cash</strong> account, is this a{" "}
+            <strong>Debit</strong> or a <strong>Credit</strong>?
           </p>
 
           {/* Answer buttons */}
           <div className="mt-5 flex gap-3">
             <button
               type="button"
-              disabled={selectedAnswer !== null}
+              disabled={chosen !== null}
               onClick={() => handleAnswer("debit")}
-              className={`rounded-lg px-6 py-3 text-sm font-semibold transition-all ${
-                selectedAnswer === "debit"
-                  ? feedback?.isCorrect
-                    ? "bg-green-100 text-green-700 ring-2 ring-green-500"
-                    : "bg-red-100 text-red-700 ring-2 ring-red-500"
-                  : "bg-navy text-white hover:bg-navy/90"
-              } disabled:cursor-not-allowed disabled:opacity-60`}
+              className={`flex-1 rounded-lg border-2 px-6 py-3 text-sm font-semibold transition-all ${
+                chosen === "debit"
+                  ? isCorrect
+                    ? "border-green-600 bg-green-600 text-white"
+                    : "border-red-600 bg-red-600 text-white"
+                  : chosen !== null
+                  ? question.answer === "debit"
+                    ? "border-green-600 bg-green-600 text-white"
+                    : "border-ice-blue bg-white text-navy opacity-50"
+                  : "border-navy bg-white text-navy hover:bg-navy hover:text-white"
+              } disabled:cursor-default`}
             >
               Debit
             </button>
             <button
               type="button"
-              disabled={selectedAnswer !== null}
+              disabled={chosen !== null}
               onClick={() => handleAnswer("credit")}
-              className={`rounded-lg px-6 py-3 text-sm font-semibold transition-all ${
-                selectedAnswer === "credit"
-                  ? feedback?.isCorrect
-                    ? "bg-green-100 text-green-700 ring-2 ring-green-500"
-                    : "bg-red-100 text-red-700 ring-2 ring-red-500"
-                  : "bg-teal text-white hover:bg-deep-blue"
-              } disabled:cursor-not-allowed disabled:opacity-60`}
+              className={`flex-1 rounded-lg border-2 px-6 py-3 text-sm font-semibold transition-all ${
+                chosen === "credit"
+                  ? isCorrect
+                    ? "border-green-600 bg-green-600 text-white"
+                    : "border-red-600 bg-red-600 text-white"
+                  : chosen !== null
+                  ? question.answer === "credit"
+                    ? "border-green-600 bg-green-600 text-white"
+                    : "border-ice-blue bg-white text-navy opacity-50"
+                  : "border-navy bg-white text-navy hover:bg-navy hover:text-white"
+              } disabled:cursor-default`}
             >
               Credit
             </button>
           </div>
 
           {/* Feedback */}
-          {feedback && (
+          {chosen !== null && (
             <div
-              className={`mt-4 rounded-lg p-4 ${
-                feedback.isCorrect
-                  ? "border border-green-200 bg-green-50"
-                  : "border border-red-200 bg-red-50"
+              className={`mt-4 rounded-lg border p-4 ${
+                isCorrect
+                  ? "border-green-200 bg-green-50"
+                  : "border-red-200 bg-red-50"
               }`}
             >
               <p
                 className={`text-sm font-semibold ${
-                  feedback.isCorrect ? "text-green-700" : "text-red-700"
+                  isCorrect ? "text-green-700" : "text-red-700"
                 }`}
               >
-                {feedback.isCorrect ? "✓ Correct!" : "✗ Not quite"}
+                {isCorrect ? "✓ Correct!" : "✗ Not quite."}
               </p>
               <p
-                className={`mt-1 text-sm ${
-                  feedback.isCorrect ? "text-green-800" : "text-red-800"
+                className={`mt-1 text-sm leading-relaxed ${
+                  isCorrect ? "text-green-800" : "text-red-800"
                 }`}
               >
-                {feedback.message}
+                {question.explanation}
               </p>
             </div>
           )}
 
           {/* Next button */}
-          {selectedAnswer !== null && (
+          {chosen !== null && (
             <button
               type="button"
               onClick={handleNext}
-              className="mt-4 rounded-lg bg-teal px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-deep-blue"
+              className="mt-4 w-full rounded-lg bg-teal px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-deep-blue"
             >
-              {currentIndex + 1 >= totalTransactions
-                ? "See Results"
-                : "Next →"}
+              {currentIndex + 1 >= total ? "See Results →" : "Next Transaction →"}
             </button>
           )}
         </div>
       )}
 
-      {/* ── Live T-Account Ledger ── */}
-      <TAccountLedger
-        entries={ledger}
+      {/* Live Cash ledger */}
+      <CashLedger
+        rows={ledger}
         debitTotal={debitTotal}
         creditTotal={creditTotal}
+        balance={balance}
         isComplete={isComplete}
       />
 
-      {/* ── End-of-Exercise Summary ── */}
+      {/* Summary */}
       {isComplete && (
-        <div className="rounded-xl border border-ice-blue bg-white p-8 shadow-sm">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-teal/10">
-            <span className="text-3xl">
-              {score === totalTransactions ? "🎉" : score >= totalTransactions / 2 ? "👍" : "📚"}
-            </span>
-          </div>
-
-          <h2 className="text-center font-serif text-2xl text-navy">
+        <div className="rounded-xl border border-ice-blue bg-white p-8 text-center shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wide text-teal">
             Exercise Complete
-          </h2>
-
-          <div className="mt-4 text-center">
-            <p className="text-4xl font-bold text-teal">
-              {score} / {totalTransactions}
-            </p>
-            <p className="mt-1 text-navy/60">
-              {score === totalTransactions
-                ? "Perfect score! You've got a solid grasp of debits and credits."
-                : score >= totalTransactions / 2
-                ? "Good work! Review the explanations below and try again to improve."
-                : "Keep practicing! Debits and credits take time to master."}
-            </p>
           </div>
-
-          {/* Debit = Credit explanation */}
-          <div className="mt-6 rounded-lg bg-ice-blue/50 p-5">
-            <h3 className="font-serif text-lg text-navy">Why Debits = Credits</h3>
-            <p className="mt-2 text-sm leading-relaxed text-navy/70">
-              In double-entry bookkeeping, <strong>total debits must always equal total
-              credits</strong>. This is because every transaction affects at least two
-              accounts — when you debit one account, you credit another by the same
-              amount. The T-account ledger below shows debit and credit totals of{" "}
-              <strong>{formatCurrency(debitTotal)}</strong> each — they balance!
-              This built-in check is one of the reasons double-entry bookkeeping has
-              been the gold standard for over 500 years.
-            </p>
+          <div className="mt-2 text-5xl font-extrabold text-teal">
+            {score} <span className="text-2xl font-bold text-navy/40">/ {total}</span>
           </div>
-
-          {/* Restart button */}
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={handleRestart}
-              className="rounded-lg bg-navy px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy/90"
-            >
-              Restart Exercise
-            </button>
-          </div>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-navy/60">
+            {score === total
+              ? "Perfect score! You've got debits and credits down."
+              : score >= total * 0.6
+              ? "Solid work — review the explanations above if any felt shaky."
+              : "Debits and credits take practice — consider re-reading the lesson and trying again."}
+          </p>
+          <button
+            type="button"
+            onClick={handleRestart}
+            className="mt-6 rounded-lg bg-navy px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-navy/90"
+          >
+            Try Again
+          </button>
         </div>
       )}
     </div>
   );
 }
 
-// ── T-Account Ledger Sub-component ──────────────────────────────────────────
+// ── Cash T-Account Ledger ───────────────────────────────────────────────────
 
-function TAccountLedger({
-  entries,
+function CashLedger({
+  rows,
   debitTotal,
   creditTotal,
+  balance,
   isComplete,
 }: {
-  entries: { debits: LedgerEntry[]; credits: LedgerEntry[] };
+  rows: LedgerRow[];
   debitTotal: number;
   creditTotal: number;
+  balance: number;
   isComplete: boolean;
 }) {
-  const hasEntries = entries.debits.length > 0 || entries.credits.length > 0;
-
-  if (!hasEntries && !isComplete) {
+  if (rows.length === 0 && !isComplete) {
     return (
       <div className="rounded-xl border border-dashed border-ice-blue bg-white p-6 text-center">
         <p className="text-sm text-navy/40">
-          The T-Account ledger will appear here as you answer each transaction.
+          The Cash T-account ledger will appear here as you answer each
+          transaction.
         </p>
       </div>
     );
   }
 
+  const debitRows = rows.filter((r) => r.side === "debit");
+  const creditRows = rows.filter((r) => r.side === "credit");
+  const maxRows = Math.max(debitRows.length, creditRows.length);
+
   return (
-    <div className="rounded-xl border border-ice-blue bg-white p-4 shadow-sm sm:p-6">
-      <h3 className="mb-4 text-center font-serif text-lg text-navy">
-        T-Account Ledger
+    <div className="rounded-xl border border-ice-blue bg-white p-6 shadow-sm">
+      <h3 className="text-center font-serif text-lg text-navy">
+        Live Ledger — Cash Account
       </h3>
 
-      {/* Two-column layout: stacked on mobile, side-by-side on desktop */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-        {/* Debit column */}
-        <div>
-          <div className="rounded-t-lg bg-navy px-4 py-2 text-center">
-            <span className="text-sm font-bold tracking-wider text-white">
-              DEBIT
-            </span>
-          </div>
-          <div className="min-h-[120px] rounded-b-lg border-x border-b border-navy/20 bg-white">
-            {entries.debits.length === 0 ? (
-              <div className="flex h-full items-center justify-center p-4">
-                <span className="text-sm text-navy/30">No entries yet</span>
-              </div>
-            ) : (
-              <div className="divide-y divide-ice-blue">
-                {entries.debits.map((entry, i) => (
-                  <div
-                    key={`debit-${i}`}
-                    className="flex items-center justify-between px-3 py-2.5 animate-[fadeIn_0.3s_ease-out]"
-                  >
-                    <span className="text-sm text-navy">{entry.account}</span>
-                    <span className="text-sm font-medium tabular-nums text-navy">
-                      {formatCurrency(entry.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          {/* Debit total */}
-          <div className="rounded-b-lg border-x border-b border-teal bg-teal/5 px-4 py-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-teal">Total Debits</span>
-              <span className="text-sm font-bold tabular-nums text-teal">
-                {formatCurrency(debitTotal)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Credit column */}
-        <div>
-          <div className="rounded-t-lg bg-teal px-4 py-2 text-center">
-            <span className="text-sm font-bold tracking-wider text-white">
-              CREDIT
-            </span>
-          </div>
-          <div className="min-h-[120px] rounded-b-lg border-x border-b border-teal/30 bg-white">
-            {entries.credits.length === 0 ? (
-              <div className="flex h-full items-center justify-center p-4">
-                <span className="text-sm text-navy/30">No entries yet</span>
-              </div>
-            ) : (
-              <div className="divide-y divide-ice-blue">
-                {entries.credits.map((entry, i) => (
-                  <div
-                    key={`credit-${i}`}
-                    className="flex items-center justify-between px-3 py-2.5 animate-[fadeIn_0.3s_ease-out]"
-                  >
-                    <span className="text-sm text-navy">{entry.account}</span>
-                    <span className="text-sm font-medium tabular-nums text-navy">
-                      {formatCurrency(entry.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          {/* Credit total */}
-          <div className="rounded-b-lg border-x border-b border-teal bg-teal/5 px-4 py-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-teal">
-                Total Credits
-              </span>
-              <span className="text-sm font-bold tabular-nums text-teal">
-                {formatCurrency(creditTotal)}
-              </span>
-            </div>
-          </div>
-        </div>
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="border-b-2 border-navy">
+              <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-navy/60">
+                Debit
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wider text-navy/60">
+                Credit
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: Math.max(maxRows, 3) }).map((_, i) => (
+              <tr key={i} className="border-b border-ice-blue">
+                <td className="px-3 py-2 text-left tabular-nums text-navy">
+                  {debitRows[i] ? formatCurrency(debitRows[i].amount) : ""}
+                </td>
+                <td className="px-3 py-2 text-right tabular-nums text-navy">
+                  {creditRows[i] ? formatCurrency(creditRows[i].amount) : ""}
+                </td>
+              </tr>
+            ))}
+            <tr>
+              <td className="px-3 py-2.5 text-left font-bold text-navy">
+                Total Debits: {formatCurrency(debitTotal)}
+              </td>
+              <td className="px-3 py-2.5 text-right font-bold text-navy">
+                Total Credits: {formatCurrency(creditTotal)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      {/* Balance indicator */}
-      {hasEntries && (
-        <div
-          className={`mt-4 rounded-lg px-4 py-2 text-center text-sm font-medium ${
-            debitTotal === creditTotal
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-700"
-          }`}
-        >
-          {debitTotal === creditTotal
-            ? `✓ Balanced: Debits equal Credits (${formatCurrency(debitTotal)})`
-            : `⚠ Debits (${formatCurrency(debitTotal)}) ≠ Credits (${formatCurrency(creditTotal)})`}
-        </div>
+      {/* Balance */}
+      <div className="mt-4 rounded-lg bg-ice-blue/50 px-4 py-3 text-center">
+        <span className="text-sm font-bold text-navy">
+          Balance:{" "}
+          <span className={balance < 0 ? "text-red-600" : "text-teal"}>
+            {formatCurrency(balance)}
+          </span>
+        </span>
+      </div>
+
+      {/* Balance explainer */}
+      {rows.length > 0 && (
+        <p className="mt-3 text-xs leading-relaxed text-navy/50">
+          Cash is an asset, so it increases with debits and decreases with
+          credits. The balance is total debits minus total credits — it tracks
+          Maria&apos;s actual cash position as she works through the week.
+        </p>
       )}
     </div>
   );
