@@ -1,6 +1,6 @@
 "use client";
-
 import { useState } from "react";
+import { InlineText } from "./InlineText";
 
 interface Slide {
   title: string;
@@ -13,7 +13,6 @@ interface SlidesViewerProps {
 
 export function SlidesViewer({ slides }: SlidesViewerProps) {
   const [current, setCurrent] = useState(0);
-
   const goNext = () => setCurrent((c) => Math.min(c + 1, slides.length - 1));
   const goPrev = () => setCurrent((c) => Math.max(c - 1, 0));
 
@@ -34,8 +33,10 @@ export function SlidesViewer({ slides }: SlidesViewerProps) {
         <div className="mb-4 text-xs font-semibold uppercase tracking-wide text-navy/40">
           Slide {current + 1} of {slides.length}
         </div>
-        <h2 className="font-serif text-2xl text-navy">{slide.title}</h2>
-        <p className="mt-4 leading-relaxed text-navy/80">{slide.body}</p>
+        <h2 className="font-serif text-2xl text-navy">
+          <InlineText text={slide.title} />
+        </h2>
+        <SlideBody body={slide.body} />
       </div>
 
       {/* Navigation */}
@@ -47,7 +48,6 @@ export function SlidesViewer({ slides }: SlidesViewerProps) {
         >
           ← Previous
         </button>
-
         {/* Dot indicators */}
         <div className="flex gap-2">
           {slides.map((_, i) => (
@@ -61,7 +61,6 @@ export function SlidesViewer({ slides }: SlidesViewerProps) {
             />
           ))}
         </div>
-
         <button
           onClick={goNext}
           disabled={current === slides.length - 1}
@@ -70,6 +69,39 @@ export function SlidesViewer({ slides }: SlidesViewerProps) {
           Next →
         </button>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Slide bodies are stored as plain text lines. Lines starting with "-" or "•"
+ * render as bullets; every other line renders as a paragraph. This keeps the
+ * DB content simple JSON while letting slides contain bullet lists.
+ */
+function SlideBody({ body }: { body: string }) {
+  const lines = body
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
+  if (lines.length === 0) return null;
+
+  return (
+    <div className="mt-4 space-y-3">
+      {lines.map((line, i) =>
+        line.startsWith("-") || line.startsWith("•") ? (
+          <p key={i} className="flex gap-2.5 leading-relaxed text-navy/80">
+            <span className="mt-0.5 shrink-0 text-teal">•</span>
+            <span>
+              <InlineText text={line.replace(/^[-•]\s*/, "")} />
+            </span>
+          </p>
+        ) : (
+          <p key={i} className="leading-relaxed text-navy/80">
+            <InlineText text={line} />
+          </p>
+        )
+      )}
     </div>
   );
 }
