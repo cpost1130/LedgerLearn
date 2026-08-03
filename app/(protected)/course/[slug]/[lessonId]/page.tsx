@@ -12,6 +12,7 @@ import { SlidesViewer } from "@/components/SlidesViewer";
 import { QuizViewer } from "@/components/QuizViewer";
 import { TAccountExercise } from "@/components/TAccountExercise";
 import { JournalEntryBuilder } from "@/components/JournalEntryBuilder";
+import { DayToDayExercise } from "@/components/DayToDayExercise";
 import { MarkCompleteButton } from "./MarkCompleteButton";
 
 interface PageProps {
@@ -132,6 +133,9 @@ export default async function LessonViewerPage({ params }: PageProps) {
         const exerciseType = (content?.exerciseType as string) || "t-account";
         if (exerciseType === "journal-entry") {
           return <JournalEntryBuilder />;
+        }
+        if (exerciseType === "day-to-day") {
+          return <DayToDayExercise />;
         }
         return <TAccountExercise />;
       }
