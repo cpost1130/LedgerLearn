@@ -3,7 +3,7 @@ import { modules, lessons } from "./schema";
 import { and, eq } from "drizzle-orm";
 
 /**
- * Seed / refresh course content (Modules 1 & 2).
+ * Seed / refresh course content (Modules 1–3).
  *
  * Idempotent: re-running this script UPSERTS every lesson (matched by module
  * slug + order index), so placeholder content already in the database gets
@@ -759,6 +759,354 @@ const MODULE_2_LESSONS: LessonSeed[] = [
   },
 ];
 
+// ── Module 3: Day-to-Day Transactions ───────────────────────────────────────
+
+const MODULE_3_SLUG = "module-3-day-to-day-transactions";
+
+const MODULE_3_LESSONS: LessonSeed[] = [
+  {
+    title: "Written Lesson",
+    type: "written",
+    orderIndex: 1,
+    content: {
+      sections: [
+        {
+          heading: "Welcome to Module 3",
+          blocks: [
+            {
+              type: "p",
+              text: "Modules 1 and 2 gave you the mechanics: debits, credits, ledgers, journal entries, trial balances. Module 3 is about applying those mechanics to the transactions that show up constantly in any small business — sales, expenses, and payroll. This time we're following **Green Acres Landscaping**, a small crew-based lawn and garden business.",
+            },
+          ],
+        },
+        {
+          heading: "Recording Sales",
+          blocks: [
+            {
+              type: "p",
+              text: "Every sale a business makes needs to be recorded, but *how* it's recorded depends on whether the customer pays immediately or later.",
+            },
+            {
+              type: "p",
+              text: "**Cash sale** — customer pays on the spot. Simple: Cash goes up, Revenue goes up.",
+            },
+            {
+              type: "p",
+              text: "**Sale on credit (invoiced)** — customer is billed and pays later. The business doesn't have the cash yet, but it has a right to collect it — that's an asset called **Accounts Receivable**.",
+            },
+            {
+              type: "p",
+              text: "**Green Acres example — a cash sale:** Green Acres mows a homeowner's lawn for $75, paid on the spot.",
+            },
+            {
+              type: "code",
+              text: "Debit:  Cash ........................... $75\nCredit:   Mowing Revenue ............... $75",
+            },
+            {
+              type: "p",
+              text: "**Green Acres example — a sale on credit:** Green Acres completes a $600 landscaping job for a commercial client, who will be invoiced and pay in 30 days.",
+            },
+            {
+              type: "code",
+              text: "Debit:  Accounts Receivable ............ $600\nCredit:   Landscaping Revenue ........... $600",
+            },
+            {
+              type: "p",
+              text: "Later, when the client actually pays:",
+            },
+            {
+              type: "code",
+              text: "Debit:  Cash ............................ $600\nCredit:   Accounts Receivable ........... $600",
+            },
+            {
+              type: "callout",
+              text: "Notice that revenue was recorded once — when the job was done — not again when the cash arrived. This is the accrual idea from Module 1 in action: Accounts Receivable is just a placeholder for cash that's coming.",
+            },
+          ],
+        },
+        {
+          heading: "Recording Expenses",
+          blocks: [
+            {
+              type: "p",
+              text: "Expenses work the same way, mirrored: **paid immediately** vs. **billed and paid later**.",
+            },
+            {
+              type: "p",
+              text: "**Paid immediately (cash expense):** Green Acres buys $40 of gas for the mowers, paid by debit card.",
+            },
+            {
+              type: "code",
+              text: "Debit:  Fuel Expense .................... $40\nCredit:   Cash ........................... $40",
+            },
+            {
+              type: "p",
+              text: "**Billed and paid later (on credit):** Green Acres gets a $200 repair done on a mower, and the shop will send an invoice due in 15 days. This creates a liability — **Accounts Payable** — money the business owes but hasn't paid yet.",
+            },
+            {
+              type: "code",
+              text: "Debit:  Repair Expense .................. $200\nCredit:   Accounts Payable ............... $200",
+            },
+            {
+              type: "p",
+              text: "When Green Acres later pays that bill:",
+            },
+            {
+              type: "code",
+              text: "Debit:  Accounts Payable ................ $200\nCredit:   Cash ........................... $200",
+            },
+            {
+              type: "callout",
+              text: "Same pattern as receivables, just on the other side: the expense is recorded when it's incurred, and the payable is cleared separately when cash actually goes out.",
+            },
+          ],
+        },
+        {
+          heading: "Payroll Basics",
+          blocks: [
+            {
+              type: "p",
+              text: "Payroll is where a lot of new bookkeepers get nervous, because a single paycheck touches more than just \"Wages Expense\" and \"Cash\" — taxes get withheld and owed to the government too. We'll keep this at the beginner level: the core idea, not full tax-table mechanics.",
+            },
+            {
+              type: "p",
+              text: "For each employee paycheck, there are generally two pieces:",
+            },
+            {
+              type: "list",
+              ordered: true,
+              items: [
+                "**Gross wages** — what the employee earned before anything is withheld. This is the full Wages Expense to the business.",
+                "**Withholdings** — amounts taken out of the employee's pay (like income tax or payroll tax) that the business doesn't get to keep — it's holding that money temporarily to pay to the government. Until it's paid over, it's a liability called **Payroll Taxes Payable**.",
+              ],
+            },
+            {
+              type: "p",
+              text: "The employee only receives **net pay** — gross wages minus withholdings.",
+            },
+            {
+              type: "p",
+              text: "**Green Acres example:** A crew member earns $500 in gross wages for the week. $75 is withheld for payroll taxes. Green Acres pays the crew member $425 by direct deposit.",
+            },
+            {
+              type: "code",
+              text: "Debit:  Wages Expense .................... $500\nCredit:   Payroll Taxes Payable .......... $75\nCredit:   Cash ............................ $425",
+            },
+            {
+              type: "p",
+              text: "Notice the entry still balances: one debit of $500, two credits totaling $500 ($75 + $425). The full $500 is the real cost to the business (that's the Wages Expense), even though the employee only sees $425 land in their account — the other $75 is sitting as a liability until Green Acres sends it to the tax authorities.",
+            },
+            {
+              type: "p",
+              text: "When Green Acres later pays that $75 to the government:",
+            },
+            {
+              type: "code",
+              text: "Debit:  Payroll Taxes Payable ............. $75\nCredit:   Cash ............................. $75",
+            },
+            {
+              type: "callout",
+              text: "**The big takeaway:** payroll isn't one expense — it's an expense (the full gross wages) plus a liability (whatever was withheld but not yet paid out) that gets settled separately.",
+            },
+          ],
+        },
+        {
+          heading: "Glossary",
+          blocks: [
+            {
+              type: "list",
+              items: [
+                "**Accounts Receivable** — money owed to the business by customers for sales already made.",
+                "**Accounts Payable** — money the business owes to others for expenses already incurred but not yet paid.",
+                "**Gross wages** — an employee's total earnings before any withholdings.",
+                "**Withholding** — money taken from an employee's pay that the business holds temporarily and owes to a third party (like a tax authority).",
+                "**Net pay** — what an employee actually receives, after withholdings (gross wages minus withholdings).",
+                "**Payroll Taxes Payable** — a liability account tracking withheld amounts the business still owes to the government.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Practice Exercises",
+          blocks: [
+            {
+              type: "p",
+              text: "Write the journal entry for each of Green Acres Landscaping's transactions below.",
+            },
+            {
+              type: "list",
+              ordered: true,
+              items: [
+                "Green Acres mows a lawn for $60, paid in cash.",
+                "Green Acres completes a $450 job for a client, to be invoiced and paid in 30 days.",
+                "That same client pays their $450 invoice in full.",
+                "Green Acres buys $90 of mulch and plants, paid immediately by debit card.",
+                "Green Acres gets a $150 equipment repair done on credit, to be paid in 15 days.",
+                "A crew member earns $400 in gross wages; $60 is withheld for payroll taxes, and $340 is paid by direct deposit.",
+              ],
+            },
+            { type: "p", text: "**Answer Key**" },
+            {
+              type: "list",
+              ordered: true,
+              items: [
+                "Debit Cash $60 / Credit Mowing Revenue $60",
+                "Debit Accounts Receivable $450 / Credit Landscaping Revenue $450",
+                "Debit Cash $450 / Credit Accounts Receivable $450",
+                "Debit Supplies Expense $90 / Credit Cash $90",
+                "Debit Repair Expense $150 / Credit Accounts Payable $150",
+                "Debit Wages Expense $400 / Credit Payroll Taxes Payable $60 / Credit Cash $340",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Key Takeaways",
+          blocks: [
+            {
+              type: "list",
+              items: [
+                "Sales are recorded when earned — either as Cash (paid now) or Accounts Receivable (paid later).",
+                "Expenses are recorded when incurred — either as Cash (paid now) or Accounts Payable (paid later).",
+                "A paycheck is really two things: the full Wages Expense to the business, and a Payroll Taxes Payable liability for whatever was withheld.",
+                "Employees only receive net pay; the business is on the hook for the full gross amount.",
+              ],
+            },
+            {
+              type: "callout",
+              text: "Ready to practice? Head to the Day-to-Day Transactions exercise to record Green Acres' sales, expenses, and payroll yourself.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    title: "Slide Overview",
+    type: "slides",
+    orderIndex: 2,
+    content: {
+      slides: [
+        {
+          title: "Bookkeeping Basics",
+          body: "Module 3: Day-to-Day Transactions\nSales, expenses, and payroll at Green Acres Landscaping",
+        },
+        {
+          title: "Recording Sales: Cash vs. Credit",
+          body: "- Cash sale: Cash ↑, Revenue ↑\n- Sale on credit: Accounts Receivable ↑, Revenue ↑ (cash comes later)\nExample: Green Acres' $75 cash mow vs. $600 invoiced landscaping job",
+        },
+        {
+          title: "When the Invoice Gets Paid",
+          body: "- Accounts Receivable is a placeholder for cash that's coming\n- When paid: Cash ↑, Accounts Receivable ↓\nExample: The $600 commercial client pays 30 days later",
+        },
+        {
+          title: "Recording Expenses: Cash vs. Credit",
+          body: "- Paid immediately: Expense ↑, Cash ↓\n- Billed later: Expense ↑, Accounts Payable ↑\nExample: $40 gas (cash) vs. $200 mower repair (on credit)",
+        },
+        {
+          title: "Payroll: Gross Wages vs. Net Pay",
+          body: "- Gross wages = full cost to the business (Wages Expense)\n- Withholdings = money held temporarily, owed to the government\n- Net pay = what the employee actually receives\nExample: $500 gross, $75 withheld, $425 direct deposit",
+        },
+        {
+          title: "The Payroll Journal Entry",
+          body: "Debit: Wages Expense $500\nCredit: Payroll Taxes Payable $75\nCredit: Cash $425\nStill balances: one $500 debit, two credits totaling $500",
+        },
+        {
+          title: "Key Takeaways",
+          body: "- Sales & expenses: cash now, or a receivable/payable for later\n- Payroll = an expense (gross wages) + a liability (withholdings)\n- Employees see net pay; the business is on the hook for the full gross amount",
+        },
+        {
+          title: "What's Next",
+          body: "- Practice: Day-to-Day Transactions exercise with Green Acres Landscaping\n- Coming in Module 4: Reconciliation & Reporting — bank reconciliation, the P&L, and the balance sheet",
+        },
+      ],
+    },
+  },
+  {
+    title: "Day-to-Day Transactions Practice",
+    type: "exercise",
+    orderIndex: 3,
+    content: {
+      exerciseType: "day-to-day",
+      source: "day_to_day_transactions_exercise.html",
+    },
+  },
+  {
+    title: "Knowledge Check",
+    type: "quiz",
+    orderIndex: 4,
+    content: {
+      questions: [
+        {
+          question:
+            "Green Acres mows a homeowner's lawn for $75, paid in cash. What is the correct journal entry?",
+          options: [
+            "Debit Cash $75 / Credit Mowing Revenue $75",
+            "Debit Mowing Revenue $75 / Credit Cash $75",
+            "Debit Cash $75 / Credit Accounts Payable $75",
+            "Debit Accounts Receivable $75 / Credit Mowing Revenue $75",
+          ],
+          correctIndex: 0,
+        },
+        {
+          question:
+            "When a sale is made on credit (invoiced, paid later), which asset does the business record?",
+          options: [
+            "Accounts Payable",
+            "Accounts Receivable",
+            "Deferred Revenue",
+            "Inventory",
+          ],
+          correctIndex: 1,
+        },
+        {
+          question:
+            "Green Acres gets a $200 mower repair done on credit, to be paid in 15 days. What is the correct entry?",
+          options: [
+            "Debit Repair Expense $200 / Credit Cash $200",
+            "Debit Repair Expense $200 / Credit Accounts Payable $200",
+            "Debit Accounts Payable $200 / Credit Repair Expense $200",
+            "Debit Cash $200 / Credit Repair Expense $200",
+          ],
+          correctIndex: 1,
+        },
+        {
+          question:
+            "A crew member earns $500 in gross wages; $75 is withheld for payroll taxes, and $425 is paid by direct deposit. What is the correct entry?",
+          options: [
+            "Debit Wages Expense $425 / Credit Cash $425",
+            "Debit Wages Expense $500 / Credit Payroll Taxes Payable $75 / Credit Cash $425",
+            "Debit Wages Expense $500 / Credit Cash $500",
+            "Debit Wages Expense $425 / Credit Payroll Taxes Payable $75 / Credit Cash $500",
+          ],
+          correctIndex: 1,
+        },
+        {
+          question: "What is net pay?",
+          options: [
+            "Gross wages plus withholdings",
+            "Gross wages minus withholdings",
+            "The full cost of an employee to the business",
+            "The amount the business owes the government",
+          ],
+          correctIndex: 1,
+        },
+        {
+          question:
+            "When Green Acres later pays the withheld $75 to the government, the entry is:",
+          options: [
+            "Debit Payroll Taxes Payable $75 / Credit Cash $75",
+            "Debit Cash $75 / Credit Payroll Taxes Payable $75",
+            "Debit Wages Expense $75 / Credit Cash $75",
+            "Debit Payroll Taxes Payable $75 / Credit Wages Expense $75",
+          ],
+          correctIndex: 0,
+        },
+      ],
+    },
+  },
+];
+
 // ── All modules ─────────────────────────────────────────────────────────────
 
 const MODULES: ModuleSeed[] = [
@@ -779,6 +1127,15 @@ const MODULES: ModuleSeed[] = [
     orderIndex: 2,
     dripDelayDays: 0,
     lessons: MODULE_2_LESSONS,
+  },
+  {
+    title: "Module 3: Day-to-Day Transactions",
+    slug: MODULE_3_SLUG,
+    description:
+      "Applies the mechanics to everyday transactions — recording sales, expenses, and payroll basics — following Green Acres Landscaping, including a glossary, practice exercises, and an interactive journal entry exercise.",
+    orderIndex: 3,
+    dripDelayDays: 0,
+    lessons: MODULE_3_LESSONS,
   },
 ];
 
