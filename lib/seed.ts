@@ -1109,6 +1109,47 @@ const MODULE_3_LESSONS: LessonSeed[] = [
 
 // ── All modules ─────────────────────────────────────────────────────────────
 
+const MODULE_5_SLUG = "module-5-wrapping-up-a-period";
+const MODULE_5_LESSONS: LessonSeed[] = [
+  { title: "Written Lesson", type: "written", orderIndex: 1, content: { sections: [
+    { heading: "The Month-End Close Checklist", blocks: [
+      { type: "p", text: "Month-end close is the set of steps a business runs through at the end of every month to make sure the books are accurate and ready to report on. It is a sequence: skipping steps or doing them out of order is where errors creep in." },
+      { type: "list", ordered: true, items: ["Record all outstanding transactions — every sale, expense, and payroll entry.", "Reconcile bank and credit card accounts against statements.", "Review accounts receivable and accounts payable.", "Check inventory, if applicable.", "Run the trial balance and confirm debits equal credits.", "Generate the P&L and Balance Sheet.", "Review reports for anything that looks off before calling the close done."] },
+      { type: "p", text: "At the end of June, Maria confirms every invoice and receipt is entered, reconciles her bank account (catching the $25 fee), checks the $400 a wholesale client owes, verifies inventory, and confirms her trial balance: $18,200 debits = $18,200 credits." }
+    ] },
+    { heading: "Common Beginner Mistakes", blocks: [
+      { type: "p", text: "Every transaction needs both a debit and a credit. Assets and Expenses increase with debits; Liabilities, Equity, and Revenue increase with credits." },
+      { type: "list", items: ["Recording a transaction on only one side.", "Mixing up debit and credit rules for liabilities and revenue.", "Forgetting non-cash events such as bank fees, interest, and depreciation.", "Confusing cash basis and accrual basis by applying them inconsistently.", "Not reconciling regularly — monthly checks keep errors small and explainable.", "Treating a balanced trial balance as proof the books are correct. Wrong-account entries can still balance."] },
+      { type: "callout", text: "A trial balance is necessary, but not sufficient: it catches unequal debits and credits, not a correct-looking entry posted to the wrong account." },
+      { type: "p", text: "Maria once recorded a $150 catering payment only as a credit to Revenue, forgetting the debit to Cash. Her trial balance did not balance — exactly the kind of error the close checklist should catch." }
+    ] },
+    { heading: "Glossary", blocks: [{ type: "list", items: ["Month-end close — the routine sequence used to ensure books are accurate before reporting.", "Single-sided entry — recording only a debit or only a credit instead of both.", "Depreciation — gradual recognition of an asset's cost as an expense over its useful life."] }] },
+    { heading: "Practice Exercises and Answer Key", blocks: [
+      { type: "list", ordered: true, items: ["Put these steps in order: generate reports, reconcile bank, record outstanding transactions, run trial balance.", "Debits are $12,400 and credits $12,250. What does this tell Maria?", "True or False: a balanced trial balance guarantees error-free books.", "Would posting a $75 supply purchase to Repair Expense instead cause an imbalance?"] },
+      { type: "list", ordered: true, items: ["Record → Reconcile → Trial balance → Generate reports.", "There is a $150 discrepancy to find and correct.", "False — wrong-account entries can still balance.", "No. Both are expense accounts, so the trial balance balances, but the P&L categories are wrong."] }
+    ] },
+    { heading: "Key Takeaways", blocks: [{ type: "list", items: ["Month-end close is a routine, not a single action.", "The trial balance catches unbalanced entries, not wrong-account entries.", "Most mistakes are missing sides, flipped debit/credit rules, or skipped reconciliation.", "A consistent monthly close keeps books trustworthy over time."] }] }
+  ] } },
+  { title: "Slide Overview", type: "slides", orderIndex: 2, content: { slides: [
+    { title: "Wrapping Up a Period", body: "Bookkeeping Basics\nClosing out the month with Maria's Bakery" },
+    { title: "The Month-End Close Checklist", body: "1. Record transactions\n2. Reconcile accounts\n3. Review A/R and A/P\n4. Check inventory\n5. Run trial balance\n6. Generate P&L and Balance Sheet\n7. Review reports" },
+    { title: "Maria's June Close", body: "Invoices and receipts entered\nBank reconciliation catches the $25 fee\nWholesale client still owes $400\nTrial balance: $18,200 = $18,200 ✓" },
+    { title: "Mistakes #1 and #2", body: "Every transaction needs a debit and credit\nAssets/Expenses increase with debits\nLiabilities/Equity/Revenue increase with credits" },
+    { title: "Mistakes #3 and #4", body: "Do not forget bank fees, interest, or depreciation\nApply cash or accrual basis consistently" },
+    { title: "Mistakes #5 and #6", body: "Reconcile monthly\nA balanced trial balance does not mean error-free books" },
+    { title: "Key Takeaways", body: "Close is a routine\nTrial balance does not catch wrong-account entries\nReview, reconcile, and apply debit/credit rules carefully" },
+    { title: "Course Complete", body: "Foundations, documents, transactions, reporting, and closing\nPractice with Maria's Bakery\nCongratulations!" }
+  ] } },
+  { title: "Month-End Close Exercise", type: "exercise", orderIndex: 3, content: { exerciseType: "month-end-close" } },
+  { title: "Module 5 Quiz", type: "quiz", orderIndex: 4, content: { questions: [
+    { question: "What comes before running the trial balance?", options: ["Generate reports", "Reconcile accounts", "Close the books permanently", "Delete old entries"], correctIndex: 1 },
+    { question: "A trial balance has debits of $12,400 and credits of $12,250. What is true?", options: ["It is balanced", "There is a $150 discrepancy", "Credits are optional", "The P&L is ready"], correctIndex: 1 },
+    { question: "A balanced trial balance guarantees no bookkeeping errors.", options: ["True", "False"], correctIndex: 1 },
+    { question: "Which is a non-cash event that can be missed?", options: ["A bank fee", "A cash sale", "A cash withdrawal", "A cash purchase"], correctIndex: 0 },
+    { question: "Posting a supply purchase to Repair Expense will usually:", options: ["Unbalance the trial balance", "Still balance but misstate expense categories", "Erase the transaction", "Increase revenue"], correctIndex: 1 }
+  ] } }
+];
+
 const MODULES: ModuleSeed[] = [
   {
     title: "Module 1: Bookkeeping Foundations",
@@ -1137,6 +1178,7 @@ const MODULES: ModuleSeed[] = [
     dripDelayDays: 0,
     lessons: MODULE_3_LESSONS,
   },
+  { title: "Module 5: Wrapping Up a Period", slug: MODULE_5_SLUG, description: "Build a reliable month-end close routine and spot common bookkeeping mistakes.", orderIndex: 5, dripDelayDays: 0, lessons: MODULE_5_LESSONS },
 ];
 
 // ── Seed logic (idempotent upsert) ──────────────────────────────────────────
