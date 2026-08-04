@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/useToast";
 
 interface DripModule {
@@ -19,7 +19,7 @@ export default function DripSchedulePage() {
   const [editValue, setEditValue] = useState<number>(0);
   const [savingId, setSavingId] = useState<number | null>(null);
 
-  const fetchModules = async () => {
+  const fetchModules = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/modules");
       if (!res.ok) throw new Error("Failed to fetch");
@@ -30,11 +30,11 @@ export default function DripSchedulePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [addToast]);
 
   useEffect(() => {
     fetchModules();
-  }, []);
+  }, [fetchModules]);
 
   const startEdit = (mod: DripModule) => {
     setEditingId(mod.id);

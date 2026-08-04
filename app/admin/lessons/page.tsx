@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/useToast";
 
 interface Lesson {
@@ -38,7 +38,7 @@ export default function ManageLessonsPage() {
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const fetchModules = async () => {
+  const fetchModules = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/modules");
       if (res.ok) {
@@ -48,9 +48,9 @@ export default function ManageLessonsPage() {
     } catch {
       // Silently fail — modules dropdown will just be empty
     }
-  };
+  }, []);
 
-  const fetchLessons = async () => {
+  const fetchLessons = useCallback(async () => {
     try {
       let url = "/api/admin/lessons";
       if (filterModuleId) {
@@ -65,16 +65,16 @@ export default function ManageLessonsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterModuleId, addToast]);
 
   useEffect(() => {
     fetchModules();
-  }, []);
+  }, [fetchModules]);
 
   useEffect(() => {
     setLoading(true);
     fetchLessons();
-  }, [filterModuleId]);
+  }, [fetchLessons]);
 
   const resetForm = () => {
     setForm({ title: "", type: "written", moduleId: "", orderIndex: 0, content: "" });
