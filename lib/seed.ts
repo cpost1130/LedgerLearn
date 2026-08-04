@@ -3,7 +3,7 @@ import { modules, lessons } from "./schema";
 import { and, eq } from "drizzle-orm";
 
 /**
- * Seed / refresh course content (Modules 1–3).
+ * Seed / refresh course content (Modules 1–4).
  *
  * Idempotent: re-running this script UPSERTS every lesson (matched by module
  * slug + order index), so placeholder content already in the database gets
@@ -1107,6 +1107,347 @@ const MODULE_3_LESSONS: LessonSeed[] = [
   },
 ];
 
+// ── Module 4: Reconciliation & Reporting ────────────────────────────────────
+
+const MODULE_4_SLUG = "module-4-reconciliation-reporting";
+
+const MODULE_4_LESSONS: LessonSeed[] = [
+  {
+    title: "Written Lesson",
+    type: "written",
+    orderIndex: 1,
+    content: {
+      sections: [
+        {
+          heading: "Welcome to Module 4",
+          blocks: [
+            {
+              type: "p",
+              text: "You've learned how to record transactions (Modules 1–3). Now it's time to check your work and turn it into something a business owner can actually read. This module covers three things: making sure your books match the bank's records, summarizing performance with a Profit & Loss statement, and summarizing financial position with a Balance Sheet. We're back with **Maria's Bakery** for this one.",
+            },
+          ],
+        },
+        {
+          heading: "Bank Reconciliation",
+          blocks: [
+            {
+              type: "p",
+              text: "**Bank reconciliation** is the process of comparing your own cash records (your ledger) against your bank statement, to make sure they agree — and figuring out why, if they don't.",
+            },
+            {
+              type: "p",
+              text: "They almost never match exactly on any given day, and that's normal. The usual culprits:",
+            },
+            {
+              type: "list",
+              items: [
+                "**Outstanding checks** — Maria wrote a check that hasn't been cashed yet. It's in her ledger as gone, but the bank hasn't processed it.",
+                "**Deposits in transit** — Maria made a deposit that hasn't posted to the bank yet.",
+                "**Bank fees or interest** — the bank charged a fee or paid interest that Maria hasn't recorded in her own books yet.",
+                "**Errors** — a typo, a duplicate entry, or a transaction recorded on the wrong side.",
+              ],
+            },
+            {
+              type: "p",
+              text: "**The reconciliation process, step by step:**",
+            },
+            {
+              type: "list",
+              ordered: true,
+              items: [
+                "Start with your ledger's ending cash balance.",
+                "Start with the bank statement's ending balance.",
+                "Adjust the bank balance for outstanding checks (subtract) and deposits in transit (add).",
+                "Adjust your ledger balance for anything the bank caught that you hadn't recorded yet (bank fees, interest earned).",
+                "The two adjusted numbers should now match.",
+              ],
+            },
+            {
+              type: "p",
+              text: "**Maria's Bakery example:**",
+            },
+            {
+              type: "p",
+              text: "Maria's ledger shows a cash balance of **$2,150**. Her bank statement shows **$2,200**.",
+            },
+            {
+              type: "list",
+              items: [
+                "She has a $75 check outstanding (written, not yet cashed).",
+                "The bank statement shows a $25 monthly service fee she hadn't recorded yet.",
+              ],
+            },
+            {
+              type: "code",
+              text: "Bank statement balance:          $2,200\n  Less: outstanding check          −$75\nAdjusted bank balance:            $2,125\n\nLedger balance:                  $2,150\n  Less: bank service fee           −$25\nAdjusted ledger balance:          $2,125",
+            },
+            {
+              type: "p",
+              text: "Both sides land on $2,125 — reconciled. Maria also needs to record that $25 bank fee in her own ledger now (Debit Bank Fee Expense $25 / Credit Cash $25), since that's a real transaction she hadn't captured yet.",
+            },
+            {
+              type: "callout",
+              text: "**Why it matters:** reconciliation is one of the best ways to catch errors and fraud early. If the numbers don't match and you can't explain why, something in the books needs a closer look.",
+            },
+          ],
+        },
+        {
+          heading: "The Profit & Loss Statement (P&L)",
+          blocks: [
+            {
+              type: "p",
+              text: "The **Profit & Loss statement** (also called an income statement) shows whether a business made or lost money over a period of time — a month, a quarter, a year. It answers one core question: **Revenue minus Expenses equals what?**",
+            },
+            {
+              type: "p",
+              text: "**Revenue − Expenses = Net Income (or Net Loss)**",
+            },
+            {
+              type: "p",
+              text: "**Maria's Bakery example — P&L for the month of June:**",
+            },
+            {
+              type: "table",
+              headers: ["", ""],
+              rows: [
+                ["**Revenue**", ""],
+                ["Bread & Pastry Sales", "$8,500"],
+                ["Catering Revenue", "$2,000"],
+                ["**Total Revenue**", "**$10,500**"],
+                ["**Expenses**", ""],
+                ["Ingredients (Cost of Goods Sold)", "$3,200"],
+                ["Wages", "$2,800"],
+                ["Rent", "$1,500"],
+                ["Utilities", "$400"],
+                ["Bank Fees", "$25"],
+                ["**Total Expenses**", "**$7,925**"],
+                ["**Net Income**", "**$2,575**"],
+              ],
+            },
+            {
+              type: "callout",
+              text: "Every account on this statement comes straight from the general ledger — the P&L is really just Revenue and Expense account balances, organized and totaled for a specific time period. This is why getting the day-to-day bookkeeping right (Modules 1–3) matters so much: a wrong entry anywhere flows straight into this report.",
+            },
+          ],
+        },
+        {
+          heading: "The Balance Sheet",
+          blocks: [
+            {
+              type: "p",
+              text: "The **Balance Sheet** is a snapshot — not of a period of time, but of a single moment. It shows what the business owns, owes, and is worth *as of* a specific date. It's the accounting equation, laid out as a report:",
+            },
+            {
+              type: "p",
+              text: "**Assets = Liabilities + Equity**",
+            },
+            {
+              type: "p",
+              text: "**Maria's Bakery example — Balance Sheet as of June 30:**",
+            },
+            {
+              type: "table",
+              headers: ["Assets", "", "Liabilities & Equity", ""],
+              rows: [
+                ["Cash", "$2,125", "Accounts Payable", "$600"],
+                ["Accounts Receivable", "$400", "Loan Payable", "$8,500"],
+                ["Inventory", "$850", "**Total Liabilities**", "**$9,100**"],
+                ["Equipment", "$12,000", "", ""],
+                ["**Total Assets**", "**$15,375**", "Maria's Equity", "$6,275"],
+                ["", "", "**Total Liabilities + Equity**", "**$15,375**"],
+              ],
+            },
+            {
+              type: "p",
+              text: "Notice Total Assets ($15,375) equals Total Liabilities + Equity ($15,375) — it has to, because this is just the accounting equation from Module 1, reported out. If it doesn't balance, there's an error somewhere in the books.",
+            },
+            {
+              type: "p",
+              text: "**How the P&L and Balance Sheet connect:** Net Income from the P&L flows into Equity on the Balance Sheet. Maria's profit for the month doesn't just disappear — it increases her stake in the business. This is the thread that ties every module in this course together: a transaction gets recorded (Modules 1–3), the books get checked (reconciliation), and the results get reported (P&L and Balance Sheet).",
+            },
+          ],
+        },
+        {
+          heading: "Glossary",
+          blocks: [
+            {
+              type: "list",
+              items: [
+                "**Bank reconciliation** — the process of comparing ledger cash records to a bank statement and resolving any differences.",
+                "**Outstanding check** — a check written and recorded but not yet cashed by the recipient.",
+                "**Deposit in transit** — a deposit made but not yet posted by the bank.",
+                "**Profit & Loss statement (P&L)** — a report of revenue and expenses over a period of time, ending in net income or net loss.",
+                "**Net income** — total revenue minus total expenses for a period (a net loss if expenses exceed revenue).",
+                "**Balance sheet** — a snapshot of assets, liabilities, and equity as of a specific date.",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Practice Exercises",
+          blocks: [
+            {
+              type: "p",
+              text: "Try these on your own, then check the answer key below.",
+            },
+            {
+              type: "list",
+              ordered: true,
+              items: [
+                "Maria's ledger shows $1,800 in cash. Her bank statement shows $1,950. There's a $200 outstanding check and a $50 deposit in transit. Do these reconcile, and what's the adjusted balance?",
+                "Using this data, calculate Net Income: Revenue $6,000, Ingredients $2,000, Wages $1,500, Rent $800.",
+                "True or False: A Balance Sheet reports activity over a period of time, like a month.",
+                "If Total Assets are $20,000 and Total Liabilities are $7,000, what is Equity?",
+              ],
+            },
+            { type: "p", text: "**Answer Key**" },
+            {
+              type: "list",
+              ordered: true,
+              items: [
+                "Adjusted bank balance: $1,950 − $200 (outstanding check) + $50 (deposit in transit) = $1,800. Adjusted ledger balance: $1,800 (nothing to adjust here). Both equal $1,800 — reconciled.",
+                "Net Income = $6,000 − ($2,000 + $1,500 + $800) = $6,000 − $4,300 = **$1,700**",
+                "**False** — a Balance Sheet is a snapshot as of a specific date, not a period. (That's what the P&L is for.)",
+                "Equity = Assets − Liabilities = $20,000 − $7,000 = **$13,000**",
+              ],
+            },
+          ],
+        },
+        {
+          heading: "Key Takeaways",
+          blocks: [
+            {
+              type: "list",
+              items: [
+                "Bank reconciliation confirms your ledger and your bank statement agree, and catches errors early.",
+                "The P&L shows performance over time: Revenue − Expenses = Net Income.",
+                "The Balance Sheet shows position at a moment in time: Assets = Liabilities + Equity.",
+                "Net Income flows into Equity — every module in this course ultimately feeds into these two reports.",
+              ],
+            },
+            {
+              type: "callout",
+              text: "Ready to practice? Head to the Reconciliation & Reporting exercise to put it all together with Maria's Bakery.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    title: "Slide Overview",
+    type: "slides",
+    orderIndex: 2,
+    content: {
+      slides: [
+        {
+          title: "Bookkeeping Basics",
+          body: "Module 4: Reconciliation & Reporting\nChecking the books and reporting on Maria's Bakery",
+        },
+        {
+          title: "Bank Reconciliation",
+          body: "- Comparing ledger cash to the bank statement\n- Common gaps: outstanding checks, deposits in transit, bank fees\nExample: Maria's $2,150 ledger vs. $2,200 bank statement → both adjust to $2,125",
+        },
+        {
+          title: "The Reconciliation Process",
+          body: "1. Start with ledger balance\n2. Start with bank balance\n3. Adjust bank for outstanding checks / deposits in transit\n4. Adjust ledger for anything the bank caught first (fees, interest)\n5. Confirm both sides match",
+        },
+        {
+          title: "The Profit & Loss Statement",
+          body: "- Revenue − Expenses = Net Income\n- Reports performance over a period of time\nVisual: Maria's June P&L — $10,500 revenue − $7,925 expenses = $2,575 net income",
+        },
+        {
+          title: "The Balance Sheet",
+          body: "- Assets = Liabilities + Equity — the accounting equation as a report\n- A snapshot as of one specific date\nVisual: Maria's June 30 balance sheet — $15,375 assets = $9,100 liabilities + $6,275 equity",
+        },
+        {
+          title: "How the P&L and Balance Sheet Connect",
+          body: "- Net Income flows into Equity\n- One month's profit becomes part of the owner's stake in the business\n- This is the thread tying every module together",
+        },
+        {
+          title: "Key Takeaways",
+          body: "- Reconciliation confirms the books match the bank, and catches errors early\n- P&L = performance over time\n- Balance Sheet = position at a moment in time\n- Net Income → Equity",
+        },
+        {
+          title: "Course Wrap-Up",
+          body: "- You've now covered: bookkeeping basics, core documents, day-to-day transactions, and reporting\n- Practice: Reconciliation & Reporting exercise with Maria's Bakery",
+        },
+      ],
+    },
+  },
+  {
+    title: "Reconciliation & Reporting Practice",
+    type: "exercise",
+    orderIndex: 3,
+    content: {
+      exerciseType: "reconciliation-reporting",
+      source: "reconciliation_reporting_exercise.html",
+    },
+  },
+  {
+    title: "Knowledge Check",
+    type: "quiz",
+    orderIndex: 4,
+    content: {
+      questions: [
+        {
+          question: "What is a bank reconciliation?",
+          options: [
+            "Comparing your ledger's cash records to the bank statement and resolving any differences",
+            "Opening a new bank account for the business",
+            "Recording every sale in the general ledger",
+            "Calculating net income for the month",
+          ],
+          correctIndex: 0,
+        },
+        {
+          question:
+            "Maria's ledger shows $1,800 in cash. Her bank statement shows $1,950. There's a $200 outstanding check and a $50 deposit in transit. What is the reconciled cash balance?",
+          options: ["$1,800", "$1,950", "$2,150", "$1,600"],
+          correctIndex: 0,
+        },
+        {
+          question:
+            "Which report shows whether a business made or lost money over a period of time?",
+          options: [
+            "Balance Sheet",
+            "Profit & Loss Statement",
+            "Bank Reconciliation",
+            "Chart of Accounts",
+          ],
+          correctIndex: 1,
+        },
+        {
+          question: "What is the formula for Net Income?",
+          options: [
+            "Assets − Liabilities",
+            "Revenue − Expenses",
+            "Cash in − Cash out",
+            "Total debits − Total credits",
+          ],
+          correctIndex: 1,
+        },
+        {
+          question: "What does a Balance Sheet show?",
+          options: [
+            "Revenue and expenses over a period of time",
+            "A snapshot of what the business owns, owes, and is worth as of a specific date",
+            "A chronological list of every transaction",
+            "A comparison of the ledger to the bank statement",
+          ],
+          correctIndex: 1,
+        },
+        {
+          question:
+            "If Total Assets are $20,000 and Total Liabilities are $7,000, what is Equity?",
+          options: ["$27,000", "$13,000", "$20,000", "$7,000"],
+          correctIndex: 1,
+        },
+      ],
+    },
+  },
+];
+
 // ── All modules ─────────────────────────────────────────────────────────────
 
 const MODULE_5_SLUG = "module-5-wrapping-up-a-period";
@@ -1177,6 +1518,14 @@ const MODULES: ModuleSeed[] = [
     orderIndex: 3,
     dripDelayDays: 0,
     lessons: MODULE_3_LESSONS,
+  },
+  {
+    title: "Module 4: Reconciliation & Reporting",
+    slug: MODULE_4_SLUG,
+    description: "Covers bank reconciliation, the Profit & Loss statement, and the Balance Sheet — checking the books and reporting results, following Maria's Bakery, including a glossary, practice exercises, and an interactive reconciliation exercise.",
+    orderIndex: 4,
+    dripDelayDays: 0,
+    lessons: MODULE_4_LESSONS,
   },
   { title: "Module 5: Wrapping Up a Period", slug: MODULE_5_SLUG, description: "Build a reliable month-end close routine and spot common bookkeeping mistakes.", orderIndex: 5, dripDelayDays: 0, lessons: MODULE_5_LESSONS },
 ];

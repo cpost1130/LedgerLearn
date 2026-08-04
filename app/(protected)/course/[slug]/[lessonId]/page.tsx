@@ -14,6 +14,7 @@ import { TAccountExercise } from "@/components/TAccountExercise";
 import { JournalEntryBuilder } from "@/components/JournalEntryBuilder";
 import { DayToDayExercise } from "@/components/DayToDayExercise";
 import { MonthEndCloseExercise } from "@/components/MonthEndCloseExercise";
+import { ReconciliationReportingExercise } from "@/components/ReconciliationReportingExercise"
 import { MarkCompleteButton } from "./MarkCompleteButton";
 
 interface PageProps {
@@ -140,6 +141,9 @@ export default async function LessonViewerPage({ params }: PageProps) {
         }
         if (exerciseType === "month-end-close") {
           return <MonthEndCloseExercise />;
+        }
+        if (exerciseType === "reconciliation-reporting") {
+          return <ReconciliationReportingExercise />;
         }
         return <TAccountExercise />;
       }
