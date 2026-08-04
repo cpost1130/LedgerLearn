@@ -183,13 +183,13 @@ const IconPractice = (
 
 const learnItems = [
   {
-    title: "The Accounting Equation &amp; Debits/Credits",
+    title: "The Accounting Equation & Debits/Credits",
     description:
       "Understand the core foundation: Assets = Liabilities + Equity, and how debits and credits keep everything in balance.",
     icon: IconEquation,
   },
   {
-    title: "T-Accounts &amp; Journal Entries",
+    title: "T-Accounts & Journal Entries",
     description:
       "Learn to visualize transactions with T-accounts, then record proper journal entries like a pro.",
     icon: IconTAccounts,
