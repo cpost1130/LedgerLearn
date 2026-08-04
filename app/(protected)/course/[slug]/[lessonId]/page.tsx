@@ -13,7 +13,8 @@ import { QuizViewer } from "@/components/QuizViewer";
 import { TAccountExercise } from "@/components/TAccountExercise";
 import { JournalEntryBuilder } from "@/components/JournalEntryBuilder";
 import { DayToDayExercise } from "@/components/DayToDayExercise";
-import { ReconciliationReportingExercise } from "@/components/ReconciliationReportingExercise";
+import { MonthEndCloseExercise } from "@/components/MonthEndCloseExercise";
+import { ReconciliationReportingExercise } from "@/components/ReconciliationReportingExercise"
 import { MarkCompleteButton } from "./MarkCompleteButton";
 
 interface PageProps {
@@ -137,6 +138,9 @@ export default async function LessonViewerPage({ params }: PageProps) {
         }
         if (exerciseType === "day-to-day") {
           return <DayToDayExercise />;
+        }
+        if (exerciseType === "month-end-close") {
+          return <MonthEndCloseExercise />;
         }
         if (exerciseType === "reconciliation-reporting") {
           return <ReconciliationReportingExercise />;
