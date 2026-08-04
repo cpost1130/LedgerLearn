@@ -42,11 +42,11 @@ export default function ManageModulesPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   useEffect(() => {
     fetchModules();
-  }, []);
+  }, [fetchModules]);
 
   const resetForm = () => {
     setForm({ title: "", slug: "", description: "", orderIndex: 0, dripDelayDays: 0 });
