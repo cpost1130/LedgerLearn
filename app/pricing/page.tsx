@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 const monthlyUrl = "https://buy.stripe.com/bJe7sK6nJ3re81L0pBeQM09";
 const lifetimeUrl = "https://buy.stripe.com/cNicN49zVge03LvgozeQM0a";
 
