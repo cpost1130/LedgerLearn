@@ -1491,6 +1491,322 @@ const MODULE_5_LESSONS: LessonSeed[] = [
   ] } }
 ];
 
+
+const MODULE_6_SLUG = "module-6-putting-it-into-software";
+const MODULE_6_LESSONS: LessonSeed[] = [
+  {
+    "title": "Written Lesson",
+    "type": "written",
+    "orderIndex": 1,
+    "content": {
+      "sections": [
+        {
+          "heading": "1. Two Ways to Keep the Books",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "Most small businesses land on one of two approaches:"
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                "**Dedicated bookkeeping software (QuickBooks Online)** — built specifically for this job. It automates a lot of the mechanics you've learned by hand (it posts both sides of an entry for you, generates reports instantly, connects to your bank).",
+                "**A spreadsheet (Excel or Google Sheets)** — more manual, but transparent, flexible, and free. Many very small or brand-new businesses start here before \"graduating\" to dedicated software."
+              ]
+            },
+            {
+              "type": "p",
+              "text": "Neither is objectively better — the right choice depends on transaction volume, budget, and how much automation you want. But everything you build in either one is still governed by what you learned in Modules 1–5. The software doesn't replace the concepts; it just gives them a home."
+            }
+          ]
+        },
+        {
+          "heading": "2. QuickBooks Online Walkthrough",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "**Setting up the Chart of Accounts (Module 2):** When Maria first sets up QuickBooks Online, one of the first things she does is review the **Chart of Accounts** (found under *Bookkeeping → Chart of Accounts*). QuickBooks starts her off with a default list, and she edits it to match her business — renaming generic accounts to things like \"Bread & Pastry Sales\" and \"Catering Revenue,\" and adding \"Ingredients (COGS)\" as an expense category."
+            },
+            {
+              "type": "p",
+              "text": "**Recording a transaction (Modules 1 & 3):** When Maria makes a cash sale, she doesn't write a journal entry by hand — she uses the **Sales → New Invoice** (or **Sales Receipt**, for an immediate cash sale) screen. She fills in the customer, the amount, and which income account it hits. Behind the scenes, QuickBooks is doing exactly what you learned in Module 1: debiting Cash, crediting Revenue. You'll never see the words \"debit\" or \"credit\" on this screen — QuickBooks handles that translation for you, but it's the same accounting equation underneath."
+            },
+            {
+              "type": "p",
+              "text": "For an expense — say, buying $200 of flour — Maria uses **Expenses → New Expense**, selects the account it should hit (\"Ingredients\"), and QuickBooks posts the debit to Ingredients and the credit to Cash automatically."
+            },
+            {
+              "type": "p",
+              "text": "**Viewing the General Ledger and Trial Balance (Module 2):** Under *Reports*, Maria can pull up the **General Ledger** report to see every transaction posted to every account — exactly the ledger structure from Module 2, just generated instantly instead of built by hand. The **Trial Balance** report does the same balance check you learned to do manually."
+            },
+            {
+              "type": "p",
+              "text": "**Bank reconciliation (Module 4):** Under *Bookkeeping → Reconcile*, Maria connects her bank feed and matches transactions QuickBooks pulled in against what's already in her books — the same reconciliation logic from Module 4, but semi-automated: QuickBooks suggests matches, and she confirms or corrects them."
+            },
+            {
+              "type": "p",
+              "text": "**Generating reports (Module 4):** Under *Reports*, Maria can generate a **Profit and Loss** and a **Balance Sheet** for any date range with a couple of clicks — reports that took manual assembly in Module 4 now generate instantly, because the underlying ledger is already structured correctly."
+            }
+          ]
+        },
+        {
+          "heading": "3. Excel Spreadsheet Walkthrough",
+          "blocks": [
+            {
+              "type": "p",
+              "text": "For a very small operation, or simply to understand the mechanics more concretely, a spreadsheet can do the same job with more visible wiring."
+            },
+            {
+              "type": "p",
+              "text": "**A simple structure — three tabs:**"
+            },
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                "**Chart of Accounts tab** — a list of account names and types (Asset, Liability, Equity, Revenue, Expense), same as Module 2.",
+                "**Transactions tab** — one row per transaction, with columns: Date, Description, Account Debited, Debit Amount, Account Credited, Credit Amount. This is your journal, from Module 2, in spreadsheet form.",
+                "**Summary tab** — formulas (like `SUMIF`) that total each account's activity from the Transactions tab, giving you the equivalent of a general ledger balance and a trial balance check."
+              ]
+            },
+            {
+              "type": "p",
+              "text": "**Maria's Bakery example — a few rows from the Transactions tab:**"
+            },
+            {
+              "type": "table",
+              "headers": [
+                "Date",
+                "Description",
+                "Account Debited",
+                "Debit",
+                "Account Credited",
+                "Credit"
+              ],
+              "rows": [
+                [
+                  "6/3",
+                  "Bread sale, cash",
+                  "Cash",
+                  "40",
+                  "Bread & Pastry Sales",
+                  "40"
+                ],
+                [
+                  "6/5",
+                  "Bought flour, cash",
+                  "Ingredients",
+                  "150",
+                  "Cash",
+                  "150"
+                ],
+                [
+                  "6/8",
+                  "Catering job, invoiced",
+                  "Accounts Receivable",
+                  "600",
+                  "Catering Revenue",
+                  "600"
+                ]
+              ]
+            },
+            {
+              "type": "p",
+              "text": "A `SUMIF` formula on the Summary tab — something like `=SUMIF(Transactions!C:C,\"Cash\",Transactions!D:D)-SUMIF(Transactions!E:E,\"Cash\",Transactions!F:F)` — totals all the debits to Cash minus all the credits to Cash, giving Maria her Cash balance without touching a T-account by hand."
+            },
+            {
+              "type": "callout",
+              "text": "**The trial balance check:** a simple formula comparing `SUM(all Debit column)` to `SUM(all Credit column)` tells Maria immediately if her spreadsheet is in balance — the exact same check from Module 2, just automated with a formula instead of adding two columns by hand."
+            },
+            {
+              "type": "p",
+              "text": "**Trade-off to know:** Excel won't stop you from making an entry that doesn't balance, and it won't auto-generate a polished P&L or Balance Sheet the way QuickBooks does — you'd build those with more formulas, or by hand. It's a great way to *understand* the mechanics, but most businesses eventually move to dedicated software as transaction volume grows."
+            }
+          ]
+        },
+        {
+          "heading": "Glossary",
+          "blocks": [
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                "**Sales Receipt** — a QuickBooks Online screen for recording an immediate cash sale.",
+                "**Bank feed** — a live connection between accounting software and a business's bank account, used to pull in transactions for reconciliation.",
+                "**SUMIF** — a spreadsheet formula that totals values in one column based on a matching condition in another column, commonly used to total account balances from a transaction log."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "Practice Exercises",
+          "blocks": [
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                "Maria makes a $50 cash sale in QuickBooks Online. Which screen would she use to record it?",
+                "In an Excel-based system, which tab holds the actual list of every transaction, one row at a time?",
+                "True or False: QuickBooks Online eliminates the need to understand debits and credits.",
+                "What does a trial balance check accomplish, whether it's done by hand, in QuickBooks, or in Excel?"
+              ]
+            },
+            {
+              "type": "p",
+              "text": "### Answer Key"
+            },
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                "**Sales Receipt** (since it's paid immediately, not invoiced for later).",
+                "The **Transactions tab** — it's the spreadsheet's version of the journal/general ledger.",
+                "**False** — QuickBooks handles the mechanics behind the scenes, but understanding debits and credits is what lets you catch errors, choose the right accounts, and make sense of the reports it generates.",
+                "It confirms total debits equal total credits across all accounts — a check that something wasn't recorded incorrectly, regardless of which tool performed the recording."
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "Key Takeaways",
+          "blocks": [
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                "QuickBooks Online and Excel are two different homes for the same underlying concepts you learned in Modules 1–5.",
+                "QuickBooks automates the debit/credit posting behind screens like Sales Receipts and Expenses — you select accounts, it handles the double-entry.",
+                "An Excel-based system makes the mechanics fully visible: a Chart of Accounts tab, a Transactions tab, and a Summary tab with formulas.",
+                "Whichever tool you use, the accounting equation and the trial balance check are still running underneath — software doesn't replace the concepts, it just gives them a faster home."
+              ]
+            },
+            {
+              "type": "p",
+              "text": "You've now seen bookkeeping from first principles all the way through to the tools you'll actually use. Head to the Software Walkthrough exercise for one last round of practice with Maria's Bakery."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "title": "Slide Overview",
+    "type": "slides",
+    "orderIndex": 2,
+    "content": {
+      "slides": [
+        {
+          "title": "Title",
+          "body": "Bookkeeping Basics\nModule 6 (Bonus): Putting It Into Software\nSubtitle: Setting up QuickBooks Online and Excel for Maria's Bakery\n\n---"
+        },
+        {
+          "title": "Two Ways to Keep the Books",
+          "body": "- QuickBooks Online: dedicated software, automates the mechanics\n- Excel: manual, transparent, free — many businesses start here\n- Both are still governed by the concepts from Modules 1–5\n\n---"
+        },
+        {
+          "title": "QuickBooks: Chart of Accounts",
+          "body": "- Bookkeeping → Chart of Accounts\n- Maria edits the defaults: \"Bread & Pastry Sales,\" \"Catering Revenue,\" \"Ingredients (COGS)\"\n- Same structure as Module 2, just inside the software\n\n---"
+        },
+        {
+          "title": "QuickBooks: Recording Transactions",
+          "body": "- Sales → New Invoice / Sales Receipt for sales\n- Expenses → New Expense for purchases\n- QuickBooks posts the debit and credit for you — same logic as Module 1, hidden behind the screen\n\n---"
+        },
+        {
+          "title": "QuickBooks: Reports & Reconciliation",
+          "body": "- Reports → General Ledger, Trial Balance, P&L, Balance Sheet — generated instantly\n- Bookkeeping → Reconcile — connects the bank feed, same logic as Module 4\n\n---"
+        },
+        {
+          "title": "Excel: A Simple 3-Tab System",
+          "body": "1. Chart of Accounts tab\n2. Transactions tab (the journal, one row per transaction)\n3. Summary tab (SUMIF formulas = ledger balances + trial balance check)\n\n---"
+        },
+        {
+          "title": "Excel Example & Trade-Offs",
+          "body": "Visual: Maria's Transactions tab — Cash/Bread Sales, Ingredients/Cash, A/R/Catering Revenue\n- Formulas replace manual T-accounts\n- Trade-off: no auto-generated reports, no built-in balance enforcement\n\n---"
+        },
+        {
+          "title": "Key Takeaways & Course Complete",
+          "body": "- Both tools are homes for the same concepts — not replacements for understanding them\n- QuickBooks automates; Excel makes the mechanics visible\n- Practice: Software Walkthrough exercise with Maria's Bakery\n- You've completed Bookkeeping Basics, start to finish"
+        }
+      ]
+    }
+  },
+  {
+    "title": "Software Walkthrough Practice",
+    "type": "exercise",
+    "orderIndex": 3,
+    "content": {
+      "exerciseType": "software-walkthrough"
+    }
+  },
+  {
+    "title": "Module 6 Quiz",
+    "type": "quiz",
+    "orderIndex": 4,
+    "content": {
+      "questions": [
+        {
+          "question": "Which QuickBooks screen records an immediate cash sale?",
+          "options": [
+            "Sales → New Invoice",
+            "Sales → New Sales Receipt",
+            "Expenses → New Expense",
+            "Reports → General Ledger"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Where does Maria rename a default account to Catering Revenue?",
+          "options": [
+            "Reports → Trial Balance",
+            "Bookkeeping → Reconcile",
+            "Bookkeeping → Chart of Accounts",
+            "Sales → New Invoice"
+          ],
+          "correctIndex": 2
+        },
+        {
+          "question": "Which Excel tab contains one row per transaction?",
+          "options": [
+            "Chart of Accounts",
+            "Transactions",
+            "Summary",
+            "Reports"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "Which formula totals values based on a matching account condition?",
+          "options": [
+            "SUMIF",
+            "VLOOKUP",
+            "COUNTA",
+            "AVERAGEIF"
+          ],
+          "correctIndex": 0
+        },
+        {
+          "question": "True or False: QuickBooks eliminates the need to understand debits and credits.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "correctIndex": 1
+        },
+        {
+          "question": "What does a trial balance check confirm?",
+          "options": [
+            "That every transaction is error-free",
+            "Total debits equal total credits",
+            "That cash equals revenue",
+            "That invoices are paid"
+          ],
+          "correctIndex": 1
+        }
+      ]
+    }
+  }
+]
 const MODULES: ModuleSeed[] = [
   {
     title: "Module 1: Bookkeeping Foundations",
@@ -1528,6 +1844,7 @@ const MODULES: ModuleSeed[] = [
     lessons: MODULE_4_LESSONS,
   },
   { title: "Module 5: Wrapping Up a Period", slug: MODULE_5_SLUG, description: "Build a reliable month-end close routine and spot common bookkeeping mistakes.", orderIndex: 5, dripDelayDays: 0, lessons: MODULE_5_LESSONS },
+  { title: "Module 6: Putting It Into Software", slug: MODULE_6_SLUG, description: "Apply bookkeeping concepts in QuickBooks Online and Excel with Maria's Bakery.", orderIndex: 6, dripDelayDays: 0, lessons: MODULE_6_LESSONS },
 ];
 
 // ── Seed logic (idempotent upsert) ──────────────────────────────────────────
