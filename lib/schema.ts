@@ -14,6 +14,7 @@ export const students = pgTable("students", {
   clerkId: text("clerk_id").unique().notNull(),
   email: text("email").notNull(),
   name: text("name"),
+  hasAccess: boolean("has_access").default(false).notNull(),
   enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
 });
 

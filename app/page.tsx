@@ -25,7 +25,7 @@ export default function Home() {
 
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
-              href="/sign-up"
+              href="/pricing"
               className="inline-block rounded-lg bg-teal px-8 py-3 text-base font-semibold text-white shadow-md transition-colors hover:bg-deep-blue no-underline"
             >
               Start Learning
