@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUserIsAdmin } from "@/lib/admin";
 import { db } from "@/lib/db";
-import { modules } from "@/lib/schema";
+import { lessons, modules } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 
 // ── PUT /api/admin/modules/[id] ── update a module
@@ -73,6 +73,10 @@ export async function DELETE(
     if (isNaN(moduleId)) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
+
+    // Lessons reference their module without ON DELETE CASCADE, so remove
+    // dependent lessons first to keep the delete consistent with the UI.
+    await db.delete(lessons).where(eq(lessons.moduleId, moduleId));
 
     const [deleted] = await db
       .delete(modules)
