@@ -12,6 +12,7 @@
   Ice-blue background, serif headings, system sans-serif body.
 */
 
+@layer base {
 *,
 *::before,
 *::after {
@@ -48,4 +49,5 @@ a {
 
 a:hover {
   color: var(--color-deep-blue);
+}
 }
