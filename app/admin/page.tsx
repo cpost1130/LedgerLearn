@@ -3,6 +3,8 @@ import { modules, lessons } from "@/lib/schema";
 import { count } from "drizzle-orm";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   const [moduleCount] = await db.select({ count: count() }).from(modules);
   const [lessonCount] = await db.select({ count: count() }).from(lessons);

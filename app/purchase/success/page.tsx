@@ -10,9 +10,9 @@ export default async function PurchaseSuccessPage({ searchParams }: PageProps) {
   if (!userId) redirect(`/sign-in?redirect_url=/purchase/success`);
   const { session_id: sessionId } = await searchParams;
   let verified = false;
-  if (sessionId && process.env.STRIPE_SECRET_KEY) {
+  if (sessionId) {
     try {
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      const session = await stripe().checkout.sessions.retrieve(sessionId);
       verified = session.status === "complete" && (session.payment_status === "paid" || session.payment_status === "no_payment_required") && session.metadata?.clerk_user_id === userId;
     } catch { verified = false; }
   }
