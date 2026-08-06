@@ -16,12 +16,9 @@ export async function POST(request: Request) {
     if (priceType !== "one_time" && priceType !== "subscription") {
       return NextResponse.json({ error: "Invalid priceType" }, { status: 400 });
     }
-    if (!process.env.STRIPE_SECRET_KEY) {
-      return NextResponse.json({ error: "Payments are not configured" }, { status: 503 });
-    }
     const student = await getOrCreateStudent();
     const origin = new URL(request.url).origin;
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripe().checkout.sessions.create({
       mode: priceType === "subscription" ? "subscription" : "payment",
       line_items: [{ price: priceType === "subscription" ? STRIPE_PRICE_MONTHLY : STRIPE_PRICE_ONE_TIME, quantity: 1 }],
       success_url: `${origin}/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
