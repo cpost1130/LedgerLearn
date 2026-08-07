@@ -12,5 +12,5 @@ function getStripe(): Stripe {
 }
 
 export { getStripe as stripe };
-export const STRIPE_PRICE_ONE_TIME = process.env.STRIPE_PRICE_ONE_TIME ?? "price_1TxSA7D5beF4SzVlfDPknFqA";
-export const STRIPE_PRICE_MONTHLY = process.env.STRIPE_PRICE_MONTHLY ?? "price_1TxSA7D5beF4SzVlW19VWXvc";
+export const STRIPE_PRICE_ONE_TIME = process.env.STRIPE_PRICE_ONE_TIME ?? "price_1U1wITLjitasGf5zCdM8NbET";
+export const STRIPE_PRICE_MONTHLY = process.env.STRIPE_PRICE_MONTHLY ?? "price_1U1wHFLjitasGf5zv2SbnFOk";
