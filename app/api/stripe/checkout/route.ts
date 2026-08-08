@@ -9,6 +9,10 @@ type PriceType = "one_time" | "subscription";
 
 export async function POST(request: Request) {
   try {
+    // Diagnostic: check env vars
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json({ error: "STRIPE_SECRET_KEY env var is not set" }, { status: 500 });
+    }
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     const body = await request.json().catch(() => ({}));
@@ -30,7 +34,8 @@ export async function POST(request: Request) {
     });
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error("Stripe checkout error", error);
-    return NextResponse.json({ error: "Unable to start checkout" }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("Stripe checkout error", msg);
+    return NextResponse.json({ error: `Checkout failed: ${msg}` }, { status: 500 });
   }
 }
