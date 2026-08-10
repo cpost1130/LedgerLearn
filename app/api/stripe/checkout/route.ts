@@ -35,7 +35,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error("Stripe checkout error", msg);
-    return NextResponse.json({ error: `Checkout failed: ${msg}` }, { status: 500 });
+    let cause = "";
+    if (error instanceof Error && "cause" in error && (error as any).cause) {
+      const c = (error as any).cause;
+      cause = " | CAUSE: " + (c instanceof Error ? c.message : String(c));
+      if (c instanceof Error && "cause" in c && (c as any).cause) {
+        cause += " | ROOT: " + String((c as any).cause);
+      }
+    }
+    const full = msg + cause;
+    console.error("Stripe checkout error", full);
+    return NextResponse.json({ error: `Checkout failed: ${full}` }, { status: 500 });
   }
 }
