@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "frame-src https://*.clerk.accounts.dev https://*.clerk.com https://js.stripe.com https://hooks.stripe.com",
               "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://api.stripe.com https://*.neon.tech",
-              "worker-src 'self' https://*.clerk.accounts.dev",
+              "worker-src 'self' https://*.clerk.accounts.dev https://*.clerk.com",
               "media-src 'self'",
               "object-src 'none'",
               "base-uri 'self'",
