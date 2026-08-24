@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useClerk, useAuth } from "@clerk/nextjs";
 
 export default function PricingPage() {
   return <main className="mx-auto max-w-5xl px-6 py-16 md:py-24">
@@ -16,7 +17,14 @@ export default function PricingPage() {
 function Plan({ title, price, suffix, description, features, priceType, featured = false }: { title: string; price: string; suffix: string; description: string; features: string[]; priceType: "one_time" | "subscription"; featured?: boolean }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { isSignedIn } = useAuth();
+  const { redirectToSignUp } = useClerk();
+
   async function checkout() {
+    if (!isSignedIn) {
+      redirectToSignUp();
+      return;
+    }
     setLoading(true); setError("");
     try {
       const response = await fetch("/api/stripe/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceType }) });
