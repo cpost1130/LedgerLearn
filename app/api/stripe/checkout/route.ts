@@ -36,11 +36,11 @@ export async function POST(request: Request) {
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     let cause = "";
-    if (error instanceof Error && "cause" in error && (error as any).cause) {
-      const c = (error as any).cause;
+    if (error instanceof Error && error.cause) {
+      const c = error.cause;
       cause = " | CAUSE: " + (c instanceof Error ? c.message : String(c));
-      if (c instanceof Error && "cause" in c && (c as any).cause) {
-        cause += " | ROOT: " + String((c as any).cause);
+      if (c instanceof Error && c.cause) {
+        cause += " | ROOT: " + String(c.cause);
       }
     }
     const full = msg + cause;
